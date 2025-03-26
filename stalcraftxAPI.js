@@ -23,12 +23,29 @@ const connection = mysql.createConnection({
   });
 
   app.get('/queststable', (req, res) => {
-    connection.query('SELECT * FROM queststable', (err, results) => {
+    const { page = 1, limit = 5 } = req.query;
+    const offset = (page - 1) * limit;
+  
+    connection.query('SELECT COUNT(*) AS total FROM queststable', (err, countResults) => {
       if (err) {
         res.status(500).send(err);
-      } else {
-        res.json(results);
+        return;
       }
+  
+      const total = countResults[0].total;
+  
+      connection.query(
+        'SELECT * FROM queststable LIMIT ? OFFSET ?',
+        [parseInt(limit), parseInt(offset)],
+        (err, results) => {
+          if (err) {
+            res.status(500).send(err);
+          } else {
+            const hasMore = offset + results.length < total;
+            res.json({ quests: results, total, hasMore });
+          }
+        }
+      );
     });
   });
 
