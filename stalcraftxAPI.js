@@ -60,12 +60,12 @@ const connection = mysql.createConnection({
           countParams.push(`%${search}%`);
         }
   
-        if (bandit === "true") {
-          countQuery += ' AND Faction = "Bandit"';
-        }
-  
-        if (covenant === "true") {
-          countQuery += ' AND Faction = "Covenant"';
+        if (bandit === "true" && covenant === "true") {
+          query =+ ' AND (Faction = "Bandit" OR Faction = "Covenant")';
+        } else if (bandit === "true") {
+          query += ' AND Faction = "Bandit"';
+        } else if (covenant === "true") {
+          query += ' AND Faction = "Covenant"';
         }
   
         connection.query(countQuery, countParams, (err, countResults) => {
