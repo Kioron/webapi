@@ -26,39 +26,35 @@ const connection = mysql.createConnection({
     const { page = 1, limit = 5, search = "", bandit, covenant } = req.query;
     const offset = (page - 1) * limit;
   
-    // Base query for fetching quests
     let query = 'SELECT * FROM queststable WHERE 1=1';
     const params = [];
   
-    // Apply search filter
     if (search) {
       query += ' AND QuestName LIKE ?';
       params.push(`%${search}%`);
     }
   
     // Apply faction filters
-    if (bandit === "true") {
+    if (bandit === "true" && covenant === "true") {
+      query =+ 'AND (Faction = "Bandit" OR Faction = "Covenant")';
+    } else if (bandit === "true") {
       query += ' AND Faction = "Bandit"';
-    }
-  
-    if (covenant === "true") {
+    } else if (covenant === "true") {
       query += ' AND Faction = "Covenant"';
     }
   
-    // Add pagination
     query += ' LIMIT ? OFFSET ?';
     params.push(parseInt(limit), parseInt(offset));
   
-    // Query to fetch filtered quests
     connection.query(query, params, (err, results) => {
       if (err) {
         res.status(500).send(err);
       } else {
-        // Query to count total filtered results
+        
         let countQuery = 'SELECT COUNT(*) AS total FROM queststable WHERE 1=1';
         const countParams = [];
   
-        // Apply the same filters for the count query
+        
         if (search) {
           countQuery += ' AND QuestName LIKE ?';
           countParams.push(`%${search}%`);
