@@ -36,7 +36,7 @@ const connection = mysql.createConnection({
   
     // Apply faction filters
     if (bandit === "true" && covenant === "true") {
-      query =+ 'AND (Faction = "Bandit" OR Faction = "Covenant")';
+      query =+ ' AND (Faction = "Bandit" OR Faction = "Covenant")';
     } else if (bandit === "true") {
       query += ' AND Faction = "Bandit"';
     } else if (covenant === "true") {
